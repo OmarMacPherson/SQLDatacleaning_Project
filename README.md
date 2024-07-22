@@ -1,6 +1,8 @@
-# SQL Data Cleaning and Exploratory Analysis of Vehicle Theft Data in New Zealand!
+# <p align="center"> SQL Data Cleaning and Exploratory Analysis of Vehicle Theft Data in New Zealand! </p>
 
-![Data Analyst Professional](https://github.com/OmarMacPherson/SQLDatacleaning_Project/blob/main/Title%20Omar%20Mac%20Pherson.png)
+<p align="center">
+  <img src="https://github.com/OmarMacPherson/SQLDatacleaning_Project/blob/main/Title%20Omar%20Mac%20Pherson.png" />
+</p>
 
 ## Purpose of this Project
 
@@ -66,7 +68,7 @@ Before initiating the **data cleaning process**, it was necessary to address an 
 
 ![Data Analyst Professional](https://github.com/OmarMacPherson/SQLDatacleaning_Project/blob/main/Import%20data.png)
 
-# Data Cleaning Process
+# <p align="center"> Data Cleaning Process </p>
 
 ### Step 1: Create Table Backup
 
