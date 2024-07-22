@@ -667,10 +667,40 @@ This project has conducted a comprehensive analysis of vehicle thefts in New Zea
 
 Explore the interactive dashboard and you can get your own insights and answers for your own investigative questions. To access to the Dashboard [CLICK HERE](https://public.tableau.com/views/NZVehicleTheftsDashboardProject/Dashboard1?:language=en-GB&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link) or in the Dashboard Picture.
 
-![Data Analyst Professional](https://github.com/OmarMacPherson/SQLDatacleaning_Project/blob/main/dashboard.png)
+[![FLipkart](https://github.com/OmarMacPherson/SQLDatacleaning_Project/blob/main/dashboard.png)](https://public.tableau.com/views/NZVehicleTheftsDashboardProject/Dashboard1?:language=en-GB&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link)
 
-[![FLipkart](https://github.com/OmarMacPherson/SQLDatacleaning_Project/blob/main/dashboard.png)](https://www.google.com/){:target="_blank"}
+# SQL File
 
+For those interested in a deeper exploration of the SQL queries used in this project or the raw data, [CLICK HERE TO CHECK THE SQL FILE](https://github.com/OmarMacPherson/SQLDatacleaning_Project/blob/main/Data%20Cleaning.sql).
+
+> [!IMPORTANT]
+> For any inquiries or further discussions on this project, please feel free to connect via [LinkedIn](www.linkedin.com/in/omaralan). or send an [E-mail](omar.macpherson@outlook.com).
+
+# Author
+
+This Project has been designed and done by **Omar Mac Pherson**.
+
+[<img src='https://cdn.jsdelivr.net/npm/simple-icons@3.0.1/icons/github.svg' alt='github' height='40'>](https://github.com/OmarMacPherson)  [<img src='https://cdn.jsdelivr.net/npm/simple-icons@3.0.1/icons/linkedin.svg' alt='linkedin' height='40'>](https://www.linkedin.com/in/omaralan/)  [<img src='https://cdn.jsdelivr.net/npm/simple-icons@3.0.1/icons/tableau.svg' alt='tableau' height='40'>](https://public.tableau.com/app/profile/omar.alan.mac.pherson/vizzes)  
+
+# Credits
+
+### Format & Style
+
+    * Github Docs (https://docs.github.com/)
+    * Dev (https://dev.to/github)
+    * Free Code Camp (https://www.freecodecamp.org/)
+
+### Other
+
+    * Icons (https://github.com/anuraghazra/github-readme-stats)
+    * Icons (https://www.flaticon.com/free-icons/github)
+    * Design Responsive (https://arturssmirnovs.github.io/)
+    * HTML (https://talk.jekyllrb.com/t/how-to-add-a-image-with-links-in-markdown/5915)
+    * Markdown (https://codinhood.com/nano/git/center-images-text-github-readme/)
+    * Markdown 2 (https://github.com/orgs/community/discussions/16925)
+    * Badges (https://github.com/Ileriayo/markdown-badges)
+    * Icons (https://cdn.jsdelivr.net/npm/simple-icons@3.0.1/icons/)
+    
 
 
 
