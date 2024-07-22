@@ -60,9 +60,9 @@ Applied **advanced querying** to extract nuanced insights and answer specific in
 
 Before initiating the **data cleaning process**, it was necessary to address an encoding issue that prevented the dataset from being imported into **MySQL**. The original file was not in UTF-8 encoding, which is required for compatibility with **MySQL**. To resolve this, I utilized **Microsoft Excel** to convert and save the file with the correct **UTF-8 encoding**. This adjustment ensured the data could be imported successfully into **MySQL** for further processing.
 
-![Data Analyst Professional](https://github.com/OmarMacPherson/SQLDatacleaning_Project/blob/main/MS%20Excel.png)
+![Data Analyst Professional](https://github.com/OmarMacPherson/SQLDatacleaning_Project/blob/main/Excel%20crop.png)
 
-Import Successfully in MySQL
+### Import Successfully in MySQL
 
 ![Data Analyst Professional](https://github.com/OmarMacPherson/SQLDatacleaning_Project/blob/main/Import%20data.png)
 
