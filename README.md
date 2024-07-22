@@ -582,6 +582,126 @@ Station wagons emerge as the most stolen vehicle type, suggesting that their fun
 
 ## Has there been an increase or decrease in vehicle thefts over the years?
 
+To determine the trend in vehicle theft incidents over recent years, the following SQL query was executed to count the number of thefts annually:
+
+```ruby
+SELECT YEAR (date_stolen) AS year_stolen, COUNT(*) AS number_of_thefts
+FROM stolen_vehicles_backup2
+GROUP BY YEAR(date_stolen)
+ORDER BY year_stolen DESC;
+```
+
+The query showed a significant increase in vehicle thefts from 2021 to 2022.
+
+![Data Analyst Professional](https://github.com/OmarMacPherson/SQLDatacleaning_Project/blob/main/output%20q4.png)
+
+The line graph below tracks monthly trends in vehicle thefts, clearly illustrating a steady increase in theft incidents from October 2021 through April 2022!
+
+![Data Analyst Professional](https://github.com/OmarMacPherson/SQLDatacleaning_Project/blob/main/graph%20q4.png)
+
+### Insight
+
+This upward trend suggests a growing concern that may require increased attention from law enforcement and public safety agencies.
+
+## When are vehicle thefts most common? (Time of year, year on year trends)
+
+To identify patterns in the timing of vehicle thefts, we conducted a monthly trend analysis over the most recent years.
+
+```ruby
+SELECT DATE_FORMAT(date_stolen, '%Y-%m') AS month, COUNT(*) AS thefts
+FROM stolen_vehicles_backup2
+GROUP BY month
+ORDER BY month;
+```
+
+### Output
+
+![Data Analyst Professional](https://github.com/OmarMacPherson/SQLDatacleaning_Project/blob/main/output%20q5.png)
+
+The line graph below illustrates the monthly trends in vehicle thefts, with a peak observed in March 2022, where the thefts dramatically increased to 1,047 incidents.
+
+![Data Analyst Professional](https://github.com/OmarMacPherson/SQLDatacleaning_Project/blob/main/graph%20q5.png)
+
+The data reveals a marked increase in vehicle thefts during the early months of 2022, peaking in March. This suggests a seasonal pattern where thefts escalate towards the end of the summer season, possibly influenced by increased outdoor activities and unattended vehicles.
+
+## Which type of car is preferred for theft—standard or luxury?
+
+I conducted a **COUNT** of vehicle thefts categorized by **make type** to ascertain the preference for **standard** versus **luxury** cars among thieves.
+
+```ruby
+SELECT make_type, COUNT(*) AS theft_count
+FROM stolen_vehicles_backup2
+GROUP BY make_type
+ORDER BY theft_count DESC;
+```
+
+### Output
+
+![Data Analyst Professional](https://github.com/OmarMacPherson/SQLDatacleaning_Project/blob/main/output%20q6.png)
+
+The corresponding visualization underscores the disparity, with standard vehicles far outpacing luxury vehicles in theft occurrences.
+
+![Data Analyst Professional](https://github.com/OmarMacPherson/SQLDatacleaning_Project/blob/main/graph%20q6.png)
+
+## Insight
+
+**Standard vehicles** are overwhelmingly more likely to be stolen compared to luxury vehicles. This preference can be attributed to the higher number of standard vehicles in use, their ease of resale, and possibly less sophisticated security features compared to luxury models.
+
+# Additional Insights: Population Density and Vehicle Theft Correlations
+
+* Auckland, which has the highest average population in New Zealand, also records the highest number of vehicle thefts.
+* Auckland not only possesses a high population but also the highest population density among New Zealand regions.
+* Regions such as Southland and Nelson, known for their lower population densities, exhibit significantly lower theft counts.
+* Despite having relatively high populations, regions like Canterbury and Waikato have lower theft counts compared to Auckland.
+
+# Summary of Findings
+
+This project has conducted a comprehensive analysis of vehicle thefts in New Zealand, leveraging **Advanced data cleaning techniques**, detailed **exploratory data analysis**, and **interactive visualizations**. Key insights have been drawn regarding the correlation between population density and theft rates across different regions, highlighting both expected trends and intriguing anomalies.
+
+# Project Availability and Use
+
+> [!IMPORTANT]  
+> This project is designed to serve as a valuable resource for the community, students, lecturers, and professionals interested in the New Zealand market and vehicle theft dynamics. It offers a solid foundation for anyone looking to derive further insights or develop alternative analyses.
+
+# Interactive Dashboard
+
+Explore the interactive dashboard and you can get your own insights and answers for your own investigative questions. To access to the Dashboard [CLICK HERE](https://public.tableau.com/views/NZVehicleTheftsDashboardProject/Dashboard1?:language=en-GB&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link) or in the Dashboard Picture.
+
+![Data Analyst Professional](https://github.com/OmarMacPherson/SQLDatacleaning_Project/blob/main/dashboard.png)
+
+[![FLipkart](https://github.com/OmarMacPherson/SQLDatacleaning_Project/blob/main/dashboard.png)](https://www.google.com/){:target="_blank"}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
