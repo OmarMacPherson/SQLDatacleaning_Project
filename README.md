@@ -347,6 +347,300 @@ FROM stolen_vehicles_backup2;
 
 ![Data Analyst Professional](https://github.com/OmarMacPherson/SQLDatacleaning_Project/blob/main/Date%20format%20UPDATED.png)
 
+After confirming the conversion accuracy, we **updated** the column to store the dates in the correct format.
+
+```ruby
+UPDATE stolen_vehicles_backup2
+SET date_stolen = STR_TO_DATE(date_stolen, '%m/%d/%Y');
+```
+
+Finally, we altered the data type of the **date_stolen** column to **DATE** to facilitate proper **date handling** in SQL queries and visualizations.
+
+```ruby
+ALTER TABLE stolen_vehicles_backup2
+MODIFY COLUMN date_stolen DATE;
+```
+
+# Step 7: Converting Data Types for Enhanced Analysis
+
+For more effective analysis and visualization, we identified the need to convert the data types of several key columns in our dataset. Specifically, the **'model_year'**, **'population'**, and **'density'** columns were originally stored in formats that are not optimal for numerical analysis.
+
+The **'model_year'** should be represented as an integer to enable year-based calculations and comparisons.
+
+```ruby
+ALTER TABLE stolen_vehicles_backup2
+MODIFY COLUMN model_year INT;
+```
+
+Accurate population figures are crucial for demographic analysis.
+
+```ruby
+ALTER TABLE stolen_vehicles_backup2
+MODIFY COLUMN population INT;
+```
+
+The **'density'** column represents population density, which may require precision to account for fractional values. Thus, i converted this column to a decimal format.
+
+```ruby
+ALTER TABLE stolen_vehicles_backup2
+MODIFY COLUMN density DECIMAL(10,2);
+```
+
+# Step 8: Removing and Correcting Blank Data
+
+**Blank data** in key fields can impede accurate analysis. In this step, we focus on **removing unnecessary blank values** from the **vehicle_type** column and ensuring consistency across similar records.
+
+First, I convert any empty strings in the **'vehicle_type'** column to NULL for **standardization**.
+
+```ruby
+UPDATE stolen_vehicles_backup2
+SET vehicle_type = NULL
+WHERE vehicle_type = '';
+```
+
+![Data Analyst Professional](https://github.com/OmarMacPherson/SQLDatacleaning_Project/blob/main/7%20ROWS%20nulls%20now.png)
+
+To fill in the **NULL** values in the **'vehicle_type'** where possible, we perform a **SELF JOIN** to match records by **'make_id'** and **'vehicle_desc'**. This allows us to propagate known **'vehicle_type'** values from similar records.
+
+```ruby
+UPDATE stolen_vehicles_backup2 svb1
+JOIN (
+    SELECT make_id, vehicle_desc, vehicle_type
+    FROM stolen_vehicles_backup2
+    WHERE vehicle_type IS NOT NULL
+) svb2 ON svb1.make_id = svb2.make_id AND svb1.vehicle_desc = svb2.vehicle_desc
+SET svb1.vehicle_type = svb2.vehicle_type
+WHERE svb1.vehicle_type IS NULL;
+```
+
+After addressing most blank entries through previous steps, a few records (specifically the last 7 rows in the **'vehicle_type'** column) still contain **NULL** values due to unavailable data. Given the small number affected, assigning these entries a default value of **"Unknown"** will not significantly impact our overall analysis.
+
+```ruby
+UPDATE stolen_vehicles_backup2
+SET vehicle_type = 'Unknown'
+WHERE vehicle_type IS NULL;
+```
+
+### Output
+
+![Data Analyst Professional](https://github.com/OmarMacPherson/SQLDatacleaning_Project/blob/main/Null%20to%20Unknown.png)
+
+# Step 9: Removing Unnecessart Columns
+
+I decided to remove several columns that were either redundant or not necessary for the project's objectives.
+
+* **'row_numb':** This column was temporarily created to assist with identifying duplicates and is no longer needed following data cleaning.
+* **'country':** This column was removed because it contains repetitive information that does not add value to our specific analysis.
+* **'location_id':** Removed as its purpose was fulfilled after merging relevant location data into the dataset, specifically into 'make_name' and 'make_type'.
+* **'make_id':** This column was redundant after successfully joining and embedding its information into 'region', 'population', and 'density'.
+
+### Queries to remove Columns
+
+```ruby
+ALTER TABLE stolen_vehicles_backup2
+DROP COLUMN row_numb;
+```
+
+```ruby
+ALTER TABLE stolen_vehicles_backup2
+DROP COLUMN country;
+```
+
+```ruby
+ALTER TABLE stolen_vehicles_backup2
+DROP COLUMN location_id;
+```
+
+```ruby
+ALTER TABLE stolen_vehicles_backup2
+DROP COLUMN make_id;
+```
+
+### Finally our dataset is clean:
+
+### Before
+
+![Data Analyst Professional](https://github.com/OmarMacPherson/SQLDatacleaning_Project/blob/main/BEFORE%20DATA%20DIRTY.png
+)
+
+### After
+
+![Data Analyst Professional](https://github.com/OmarMacPherson/SQLDatacleaning_Project/blob/main/Final%20DATASET%20CLEAN.png)
+
+# <p align="center"> Data Exploratory Analysis </p>
+
+With the data now clean and streamlined, we can begin exploratory analysis to uncover valuable insights. We employ **summary statistics** to provide a quick overview of the data's characteristics, helping to identify **patterns**, **outliers**, and typical values that inform our understanding of vehicle theft dynamics.
+
+### Summary Statistics
+
+```ruby
+SELECT AVG(model_year), MIN(model_year), MAX(model_year), STDDEV(model_year)
+FROM stolen_vehicles_backup2;
+```
+
+### Insights derived from Summary Statistics
+
+* **Mean (Average Model Year):**
+
+	* **Insight:** The average model year of the stolen vehicles is approximately 2005. This suggests that the majority of vehicle thefts in this dataset involve vehicles that are about 17 years old, as of 2022.
+ 	* **Implication:** Older vehicles, which might lack modern security features, are predominantly targeted by thieves.
+ 
+* **Minimum (Oldest Vehicle Stolen):**
+
+	* **Insight:** The oldest vehicle recorded as stolen is from the year 1940.
+ 	* **Implication:** This indicates that classic or vintage vehicles, which are often valued as collectibles, are also at risk of theft.
+ 
+* **Standard Deviation (Variability in Model Years):**
+
+	* **Insight:** The standard deviation in the model years of stolen vehicles is approximately 9 years. This variability suggests that the model years of stolen cars range roughly from 1996 to 2014.
+ 	* **Implication:** Understanding the common model years of stolen vehicles can help in focusing preventive measures or enhancing recovery efforts for specific vehicle age groups.
+ 
+> [!NOTE]  
+> Before we proceed with addressing our investigative questions and extracting insights, it is essential to determine the time scope of the vehicle theft incidents in our dataset. Understanding the date range helps contextualize our analysis and ensures that temporal comparisons are relevant.
+
+```ruby
+SELECT MIN(date_stolen) as Minimun, MAX(date_stolen) as Maximun
+FROM stolen_vehicles_backup2;
+```
+
+### Output: This query establishes that the dataset spans from July 10, 2021, to April 6, 2022.
+
+![Data Analyst Professional](https://github.com/OmarMacPherson/SQLDatacleaning_Project/blob/main/Range%20dates.png)
+
+# <p align="center"> Investigative Questions </p>
+
+## Which regions in New Zealand are most prone to vehicle thefts?
+
+To address this question, we employed SQL queries that utilize the **GROUP BY** and **ORDER BY** clauses. This approach helps aggregate the data by region and sort it to reveal areas with the highest number of vehicle thefts.
+
+```ruby
+SELECT region, COUNT(*) AS number_of_thefts
+FROM stolen_vehicles_backup2
+GROUP BY region
+ORDER BY number_of_thefts DESC;
+```
+
+### Ouput: The query revealed that Auckland is significantly impacted by vehicle thefts, with a total of 1,625 reported incidents, far exceeding other regions. 
+
+![Data Analyst Professional](https://github.com/OmarMacPherson/SQLDatacleaning_Project/blob/main/Output%20query%20Question.png)
+
+The **Map visualization** created in **Tableau**, highlights Auckland in a darker shade, indicating its higher theft frequency, with detailed statistics showing that **1,511** standard vehicles and **114** luxury vehicles were stolen.
+
+![Data Analyst Professional](https://github.com/OmarMacPherson/SQLDatacleaning_Project/blob/main/Map%20question%201.png)
+
+### Insights
+
+The concentrated high number of thefts in Auckland underscores its status as the most theft-prone region in New Zealand. This insight is crucial for local authorities and residents to strategize prevention measures effectively.
+
+## Are certain makes or models more likely to be stolen?
+
+To identify which vehicle makes and models are most frequently stolen, we utilized the following SQL query to **COUNT** and rank them by the number of theft incidents.
+
+```ruby
+SELECT make_name, COUNT(*) AS number_of_thefts
+FROM stolen_vehicles_backup2
+GROUP BY make_name
+ORDER BY number_of_thefts DESC;
+```
+
+### Output
+
+![Data Analyst Professional](https://github.com/OmarMacPherson/SQLDatacleaning_Project/blob/main/output%20query%20q2.png)
+
+The bar chart illustrates these statistics, with Toyota displaying a significantly higher bar, indicating its prominence in theft incidents compared to other brands.
+
+![Data Analyst Professional](https://github.com/OmarMacPherson/SQLDatacleaning_Project/blob/main/graph%20q2.png)
+
+### Insight
+
+The substantial theft numbers for Toyota suggest that certain vehicle characteristics associated with this brand, such as popularity and resale value, may make it a more appealing target for theft.
+
+## What types of vehicles are most commonly stolen?
+
+I analyzed the dataset to determine the frequency of thefts by vehicle type using the following SQL query, which counts the thefts for each type.
+
+```ruby
+SELECT vehicle_type, COUNT(*) AS number_of_thefts
+FROM stolen_vehicles_backup2
+GROUP BY vehicle_type
+ORDER BY number_of_thefts DESC;
+```
+
+### Output
+
+![Data Analyst Professional](https://github.com/OmarMacPherson/SQLDatacleaning_Project/blob/main/output%20q3.png)
+
+The analysis clearly indicates that certain vehicle types are more frequently targeted by thieves.
+
+The bar chart below provides a visual representation of theft frequency by vehicle type, with station wagons showing the highest incidence, followed closely by saloons and trailers.
+
+![Data Analyst Professional](https://github.com/OmarMacPherson/SQLDatacleaning_Project/blob/main/graph%20q3.png)
+
+### Insight
+
+Station wagons emerge as the most stolen vehicle type, suggesting that their functionality and perhaps their common use in various capacities make them a preferred target for theft.
+
+## Has there been an increase or decrease in vehicle thefts over the years?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+ 
+	
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
