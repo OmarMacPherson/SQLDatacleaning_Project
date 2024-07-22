@@ -115,6 +115,9 @@ ALTER TABLE stolen_vehicles_backup
 ADD COLUMN make_name VARCHAR(255),
 ADD COLUMN make_type VARCHAR(255);
 ```
+
+## New Columns Added
+
 ![Data Analyst Professional](https://github.com/OmarMacPherson/SQLDatacleaning_Project/blob/main/ALTER%20TABLE.png)
 
 > [!IMPORTANT]
@@ -123,6 +126,255 @@ ADD COLUMN make_type VARCHAR(255);
 ```ruby
 SET SQL_SAFE_UPDATES = 0;
 ```
+
+## Populating New Columns:
+
+After adding new, initially empty columns to the **stolen_vehicles_backup table**, we proceeded to fill these columns with data. This was accomplished using the following SQL commands: **“UPDATE”**, **“JOIN”** and **“SET”**.
+
+```ruby
+UPDATE stolen_vehicles_backup svb
+JOIN make_details md ON svb.make_id = md.make_id
+SET svb.make_name = md.make_name,
+    svb.make_type = md.make_type;
+```
+
+## Extending the Main Table with Geographic Information:
+
+To further enhance our analysis capabilities, I added new columns to the **stolen_vehicles_backup** table to include geographic information such as **region**, **country**, **population**, and **density**. This allows us to incorporate detailed location data into our dataset.
+
+```ruby
+ALTER TABLE stolen_vehicles_backup
+ADD COLUMN region VARCHAR(255),
+ADD COLUMN country VARCHAR(255),
+ADD COLUMN population VARCHAR(255),
+ADD COLUMN density VARCHAR(255);
+```
+
+Following the addition of new geographic columns to the **stolen_vehicles_backup** table, I executed an **SQL query** to populate these columns with data. This was achieved by performing a **JOIN** operation with the locations table and **UPDATING** the main table accordingly.
+
+```ruby
+UPDATE stolen_vehicles_backup svb
+JOIN locations l ON svb.location_id = l.location_id
+SET svb.region = l.region,
+	svb.country = l.country,
+	svb.population = l.population,
+	svb.density = l.density;
+```
+
+### Result Output
+
+![Data Analyst Professional](https://github.com/OmarMacPherson/SQLDatacleaning_Project/blob/main/locations%20update.png)
+
+# Step 4: Identifying Duplicate Values
+
+To ensure the accuracy of our dataset, I implemented a **Common Table Expression (CTE)** to identify any duplicate entries in the **stolen_vehicles_backup table**. The **CTE** helps in pinpointing duplicates based on several key attributes, including **vehicle type**, **make ID**, **model year**, vehicle description, color, **date stolen**, **location ID**, and associated make and geographic details.
+
+```ruby
+WITH duplicate_cte as
+(
+SELECT *, 
+ROW_NUMBER() OVER(
+PARTITION BY vehicle_type, make_id, model_year, vehicle_desc, 
+color, date_stolen, location_id, make_name, make_type, region, country, population, density) AS row_num
+FROM stolen_vehicles_backup
+)
+SELECT *
+FROM duplicate_cte
+WHERE row_num > 1;
+```
+
+The execution of our duplicate identification query revealed **13 records** that appear to be duplicates. This finding indicates a need for further in-depth analysis of these specific entries to understand their nature and determine the appropriate actions to resolve any data integrity issues.
+
+### Output
+
+![Data Analyst Professional](https://github.com/OmarMacPherson/SQLDatacleaning_Project/blob/main/Duplicate%20Columns.png)
+
+![Data Analyst Professional](https://github.com/OmarMacPherson/SQLDatacleaning_Project/blob/main/Duplicate%20Columns%202.png)
+
+> [!NOTE]  
+> Before proceeding to delete any identified duplicates, it is crucial to manually verify each record to confirm that they are indeed exact duplicates. This precautionary step helps prevent the accidental deletion of unique data entries that might only superficially appear similar.
+
+```ruby
+SELECT *
+FROM stolen_vehicles_backup
+WHERE date_stolen = '1/8/22'
+AND vehicle_desc = 'FORESTER';
+```
+
+### Output
+
+![Data Analyst Professional](https://github.com/OmarMacPherson/SQLDatacleaning_Project/blob/main/Checking%20Duplicate.png)
+
+```ruby
+SELECT *
+FROM stolen_vehicles_backup
+WHERE date_stolen = '1/29/22'
+AND vehicle_desc = 'CAPELLA';
+```
+
+### Output 
+
+![Data Analyst Professional](https://github.com/OmarMacPherson/SQLDatacleaning_Project/blob/main/Checking%20dupliocate%202.png)
+
+```ruby
+SELECT *
+FROM stolen_vehicles_backup
+WHERE date_stolen = '3/4/22'
+AND vehicle_desc = 'COURIER';
+```
+
+![Data Analyst Professional](https://github.com/OmarMacPherson/SQLDatacleaning_Project/blob/main/Checking%20Duplicate%203.png)
+
+```ruby
+SELECT *
+FROM stolen_vehicles_backup
+WHERE date_stolen = '11/17/21'
+AND vehicle_desc = 'CAPELLA';
+```
+
+![Data Analyst Professional](https://github.com/OmarMacPherson/SQLDatacleaning_Project/blob/main/Checking%20Duplicate%204.png)
+
+> [!IMPORTANT]  
+> After confirming the presence of duplicate data, I proceeded to remove these entries using a **DELETE** statement in conjunction with a **Common Table Expression (CTE)**. This method ensures precise targeting and removal of only the duplicate records, maintaining the integrity of our dataset.
+
+```ruby
+WITH duplicate_cte as
+(
+SELECT *, 
+ROW_NUMBER() OVER(
+PARTITION BY vehicle_type, make_id, model_year, vehicle_desc, 
+color, date_stolen, location_id, make_name, make_type, region, country, population, density) AS row_num
+FROM stolen_vehicles_backup
+)
+DELETE
+FROM duplicate_cte
+WHERE row_num > 1;
+```
+
+> [!WARNING]  
+> Sometimes, due to system limitations or specific configurations, the use of a **Common Table Expression (CTE)** may not be recognized. In such cases, an alternative approach is to create a temporary table, populate it with data including a row number identifier for potential duplicates, and then delete duplicates based on this identifier. This method ensures that data integrity is maintained even when traditional methods fail.
+
+```ruby
+CREATE TABLE `stolen_vehicles_backup2` (
+  `vehicle_id` int DEFAULT NULL,
+  `vehicle_type` text,
+  `make_id` int DEFAULT NULL,
+  `model_year` text,
+  `vehicle_desc` text,
+  `color` text,
+  `date_stolen` text,
+  `location_id` int DEFAULT NULL,
+  `make_name` varchar(255) DEFAULT NULL,
+  `make_type` varchar(255) DEFAULT NULL,
+  `region` varchar(255) DEFAULT NULL,
+  `country` varchar(255) DEFAULT NULL,
+  `population` varchar(255) DEFAULT NULL,
+  `density` varchar(255) DEFAULT NULL,
+  `row_numb` INT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+```
+
+```ruby
+INSERT INTO stolen_vehicles_backup2
+SELECT *, 
+ROW_NUMBER() OVER(
+PARTITION BY vehicle_type, make_id, model_year, vehicle_desc, 
+color, date_stolen, location_id, make_name, make_type, region, country, population, density) AS row_num
+FROM stolen_vehicles_backup;
+```
+
+```ruby
+DELETE
+FROM stolen_vehicles_backup2
+WHERE row_numb > 1;
+```
+
+![Data Analyst Professional](https://github.com/OmarMacPherson/SQLDatacleaning_Project/blob/main/DELETE%20Duplicate.png)
+
+# Step 5: Data Standardization
+
+In our dataset, the **"vehicle_type"** column includes multiple categorizations for trailers, specifically **"Trailer"** and **"Trailer - Heavy".** To simplify analysis and ensure uniformity in our data handling, we will standardize these entries under a single label **"Trailer"**.
+
+![Data Analyst Professional](https://github.com/OmarMacPherson/SQLDatacleaning_Project/blob/main/Standardisation%20names%20Trailer.png)
+
+I consolidate all variations to **“Trailer”** to maintain consistency.
+
+```ruby
+UPDATE stolen_vehicles_backup2
+SET vehicle_type = 'Trailer'
+WHERE vehicle_type LIKE 'Trailer%';
+```
+
+### Output
+
+![Data Analyst Professional](https://github.com/OmarMacPherson/SQLDatacleaning_Project/blob/main/Trailer%20standarize.png)
+
+I identified an inconsistency in the spelling of the car make **"Kia"** which was erroneously entered as **"Kea"**. To ensure **data accuracy** and consistency in our analysis, we need to **standardize** these entries.
+
+![Data Analyst Professional](https://github.com/OmarMacPherson/SQLDatacleaning_Project/blob/main/Standardisation%20Kia%20and%20KEA.png)
+
+A review of the dataset revealed 28 records where **"Kia"** was misspelled as **"Kea"**.
+
+![Data Analyst Professional](https://github.com/OmarMacPherson/SQLDatacleaning_Project/blob/main/28%20ROWS%20WITH%20KEA.png)
+
+### Solution
+
+```ruby
+UPDATE stolen_vehicles_backup2
+SET make_name = 'Kia'
+WHERE make_name LIKE 'Kea';
+```
+
+### Output
+
+![Data Analyst Professional](https://github.com/OmarMacPherson/SQLDatacleaning_Project/blob/main/KIA%20FIXED.png
+)
+
+# Step 6: Converting Date Format for Better Analysis
+
+The **date_stolen** column was initially formatted as text, which can hinder efficient date-based analysis and visualization. To optimize this, we converted the text entries into a proper **date format**.
+
+### Process:
+
+> [!IMPORTANT]  
+> Before applying the change to the entire dataset, we previewed the conversion to ensure accuracy.
+
+```ruby
+SELECT date_stolen,
+STR_TO_DATE(date_stolen, '%m/%d/%Y')
+FROM stolen_vehicles_backup2;
+```
+
+![Data Analyst Professional](https://github.com/OmarMacPherson/SQLDatacleaning_Project/blob/main/Date%20format%20UPDATED.png)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
